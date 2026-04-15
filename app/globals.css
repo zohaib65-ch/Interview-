@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "react-quill-new/dist/quill.snow.css";
+
+:root {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
+  --card: #111114;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.07), transparent 22%),
+    radial-gradient(circle at 85% 90%, rgba(255, 255, 255, 0.05), transparent 24%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-space-grotesk), sans-serif;
+}
+
+.ql-toolbar.ql-snow {
+  border: 0 !important;
+  border-bottom: 1px solid #3f3f46 !important;
+  background-color: #09090b;
+}
+
+.ql-container.ql-snow {
+  border: 0 !important;
+  font-family: var(--font-space-grotesk), sans-serif;
+  min-height: 180px;
+}
+
+.ql-editor {
+  color: #f4f4f5;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.ql-editor.ql-blank::before {
+  color: #71717a !important;
+  font-style: normal !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: #d4d4d8;
+}
+
+.ql-snow .ql-fill {
+  fill: #d4d4d8;
+}
+
+.ql-snow .ql-picker,
+.ql-snow .ql-picker.ql-expanded .ql-picker-label {
+  color: #d4d4d8;
+}
+
+.prose-qa p {
+  margin-bottom: 0.75rem;
+  line-height: 1.75;
+}
+
+.prose-qa ul,
+.prose-qa ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+  list-style-position: outside;
+}
+
+.prose-qa ul {
+  list-style-type: disc;
+}
+
+.prose-qa ol {
+  list-style-type: decimal;
+}
+
+.prose-qa li {
+  margin: 0.3rem 0;
+}
+
+.prose-qa a {
+  color: #f4f4f5;
+  text-decoration: underline;
+}
+
+.prose-qa blockquote {
+  margin: 0.75rem 0;
+  border-left: 2px solid #3f3f46;
+  padding-left: 0.85rem;
+  color: #d4d4d8;
+}
+
+.prose-qa pre {
+  overflow: auto;
+  border-radius: 0.5rem;
+  background-color: #09090b;
+  padding: 0.75rem;
+}
+
+.prose-qa h1,
+.prose-qa h2,
+.prose-qa h3,
+.prose-qa h4,
+.prose-qa h5,
+.prose-qa h6 {
+  margin: 1rem 0 0.5rem;
+  font-weight: 700;
+}
