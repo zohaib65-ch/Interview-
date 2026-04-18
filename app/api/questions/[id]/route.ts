@@ -12,8 +12,20 @@ function toPlainText(html: string) {
     .trim();
 }
 
+function normalizeAnswerHtml(answer: string) {
+  return answer
+    .replace(/\u00a0/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\u00ad/g, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/([A-Za-z0-9])\s*<br\s*\/?>\s*([A-Za-z0-9])/g, "$1$2")
+    .replace(/([A-Za-z0-9])\r?\n([A-Za-z0-9])/g, "$1$2");
+}
+
 function sanitizeAnswer(answer: string) {
-  return sanitizeHtml(answer, {
+  const cleanedAnswer = normalizeAnswerHtml(answer);
+
+  return sanitizeHtml(cleanedAnswer, {
     allowedTags: ["p", "br", "strong", "em", "u", "s", "ul", "ol", "li", "blockquote", "pre", "code", "h1", "h2", "h3", "h4", "h5", "h6", "a"],
     allowedAttributes: {
       a: ["href", "target", "rel"],
@@ -27,7 +39,7 @@ function serialize(question: { _id: { toString: () => string }; question: string
   return {
     _id: question._id.toString(),
     question: question.question,
-    answer: question.answer,
+    answer: normalizeAnswerHtml(question.answer),
     createdAt: question.createdAt,
     updatedAt: question.updatedAt,
   };

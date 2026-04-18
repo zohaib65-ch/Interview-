@@ -15,7 +15,19 @@ type QuestionCardProps = {
 };
 
 export function QuestionCard({ question, index, onEdit, onDelete, isDeleting }: QuestionCardProps) {
-  const createdDate = new Date(question.createdAt).toLocaleString();
+  const createdDate = new Date(question.createdAt).toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const normalizedAnswer = question.answer
+    .replace(/\u00a0/g, " ")
+    .replace(/\u00ad/g, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/([A-Za-z0-9])\s*<br\s*\/?>\s*([A-Za-z0-9])/g, "$1$2")
+    .replace(/([A-Za-z0-9])\r?\n([A-Za-z0-9])/g, "$1$2");
 
   return (
     <Card className="group relative overflow-hidden">
@@ -24,16 +36,16 @@ export function QuestionCard({ question, index, onEdit, onDelete, isDeleting }: 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <CardDescription>Question {index}</CardDescription>
-            <CardTitle className="text-lg leading-7 font-extrabold! ">
+            <CardTitle className="sm:text-lg text-sm leading-7 font-extrabold! ">
               <span className="">Question : {question.question}</span>
             </CardTitle>
           </div>
-          <div className="flex items-center gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => onEdit(question)} className="text-zinc-300">
+          <div className="flex w-full items-center gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={() => onEdit(question)} className="text-zinc-300 border flex-1 sm:flex-initial">
               <Edit3 className="mr-1.5 h-4 w-4" />
               Edit
             </Button>
-            <Button type="button" variant="destructive" size="sm" onClick={() => onDelete(question._id)} disabled={isDeleting}>
+            <Button type="button" variant="destructive" size="sm" onClick={() => onDelete(question._id)} disabled={isDeleting} className="flex-1 sm:flex-initial">
               <Trash2 className="mr-1.5 h-4 w-4" />
               {isDeleting ? "Deleting..." : "Delete"}
             </Button>
@@ -41,8 +53,10 @@ export function QuestionCard({ question, index, onEdit, onDelete, isDeleting }: 
         </div>
       </CardHeader>
       <CardContent className="relative">
-        <article className="prose-qa mt-2 max-w-none text-zinc-200" dangerouslySetInnerHTML={{ __html: question.answer }} />
-        <p className="text-xs text-right text-zinc-500">Saved: {createdDate}</p>
+        <article className="prose-qa mt-2 max-w-none text-zinc-200" dangerouslySetInnerHTML={{ __html: normalizedAnswer }} />
+        <p className="text-xs text-right text-zinc-500" suppressHydrationWarning>
+          Saved: {createdDate}
+        </p>
       </CardContent>
     </Card>
   );
