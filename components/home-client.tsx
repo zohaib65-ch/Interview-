@@ -2,52 +2,144 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, CircleCheckBig, Plus } from "lucide-react";
+import { ArrowRight, BookOpen, CircleCheckBig, Layers, Plus, Sparkles } from "lucide-react";
 
 import { QuestionFormModal } from "@/components/question-form-modal";
+import { ScenarioQuestionFormModal } from "@/components/scenario-question-form-modal";
 import { Button } from "@/components/ui/button";
 import type { QuestionItem } from "@/types/question";
+import type { ScenarioQuestionItem } from "@/types/scenario-question";
 
 export function HomeClient() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [lastSavedQuestion, setLastSavedQuestion] = useState<QuestionItem | null>(null);
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
+
+  const [lastSaved, setLastSaved] = useState<{
+    type: "technical" | "scenario";
+    title: string;
+  } | null>(null);
 
   return (
-    <main className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-14">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_35%)]" />
+    <main className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-8 sm:px-8 sm:py-12">
+      <div className="absolute inset-0 -z-10 " />
 
+      {/* Hero Section */}
       <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6 backdrop-blur sm:p-10">
-        <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">Personal Interview Prep</p>
-        <h1 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-zinc-50 sm:text-5xl sm:leading-[1.15]">Zohaib Interview</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-300 sm:text-base">
-          Save technical interview questions with detailed rich-text answers, then revise everything in a clean card-based view.
+        <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-xs text-zinc-300">
+          <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
+          <span>Personal Interview Prep Workspace</span>
+        </div>
+        <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight text-zinc-50 sm:text-5xl sm:leading-[1.15]">
+          Master Your Next Tech Interview
+        </h1>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-300 sm:text-base">
+          Two dedicated question banks built for deep technical mastery and high-stakes scenario solving.
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Question
-          </Button>
-          <Link href="/interview-questions" className="inline-flex">
-            <Button variant="outline">
-              Open Interview Questions
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-
-        {lastSavedQuestion ? (
-          <div className="mt-8 rounded-lg border border-zinc-800 bg-zinc-900/70 p-4 text-zinc-200">
-            <p className="flex items-center gap-2 text-sm text-zinc-300">
-              <CircleCheckBig className="h-4 w-4 text-zinc-100" />
-              Question saved successfully.
-            </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-100">{lastSavedQuestion.question}</p>
+        {lastSaved ? (
+          <div className="mt-6 flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/90 p-4 text-zinc-200">
+            <CircleCheckBig className="h-5 w-5 text-emerald-400 shrink-0" />
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                {lastSaved.type === "technical" ? "Technical Question Saved" : "Scenario Question Saved"}
+              </p>
+              <p className="text-sm font-medium text-zinc-100">{lastSaved.title}</p>
+            </div>
           </div>
         ) : null}
       </section>
 
-      <QuestionFormModal open={isModalOpen} onOpenChange={setIsModalOpen} onSuccess={(question) => setLastSavedQuestion(question)} />
+      {/* Two Dedicated Track Cards */}
+      <section className="mt-8 grid gap-6 md:grid-cols-2">
+        {/* Track 1: Technical Questions */}
+        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
+          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
+          <div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
+              <BookOpen className="h-5 w-5 text-zinc-300" />
+            </div>
+
+            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 01</p>
+            <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-50">Technical Interview Questions</h2>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              Core concept questions, algorithms, syntax fundamentals, and standard technical Q&amp;A with rich-text formatted answers.
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button
+              variant="primary"
+              onClick={() => setIsQuestionModalOpen(true)}
+              className="flex-1 sm:flex-initial"
+            >
+              <Plus className="mr-1.5 h-4 w-4" />
+              Add Technical Question
+            </Button>
+            <Link href="/interview-questions" className="flex-1 sm:flex-initial">
+              <Button variant="outline" className="w-full">
+                Open Questions
+                <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Track 2: Scenario Questions */}
+        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
+          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
+          <div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
+              <Layers className="h-5 w-5 text-zinc-300" />
+            </div>
+
+            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 02 • Scenarios</p>
+            <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-50">Scenario-Based Questions</h2>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              Real-world situational challenges, production outages, architectural trade-offs, and step-by-step resolution walkthroughs.
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button
+              variant="primary"
+              onClick={() => setIsScenarioModalOpen(true)}
+              className="flex-1 sm:flex-initial"
+            >
+              <Plus className="mr-1.5 h-4 w-4" />
+              Add Scenario Question
+            </Button>
+            <Link href="/scenario-questions" className="flex-1 sm:flex-initial">
+              <Button variant="outline" className="w-full">
+                Open Scenarios
+                <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Modals */}
+      <QuestionFormModal
+        open={isQuestionModalOpen}
+        onOpenChange={setIsQuestionModalOpen}
+        onSuccess={(question: QuestionItem) =>
+          setLastSaved({
+            type: "technical",
+            title: question.question,
+          })
+        }
+      />
+
+      <ScenarioQuestionFormModal
+        open={isScenarioModalOpen}
+        onOpenChange={setIsScenarioModalOpen}
+        onSuccess={(scenario: ScenarioQuestionItem) =>
+          setLastSaved({
+            type: "scenario",
+            title: scenario.question,
+          })
+        }
+      />
     </main>
   );
 }

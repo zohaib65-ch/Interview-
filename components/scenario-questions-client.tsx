@@ -2,49 +2,49 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Layers, Plus, Search } from "lucide-react";
+import { ArrowLeft, BookOpen, Plus, Search } from "lucide-react";
 
-import { QuestionCard } from "@/components/question-card";
-import { QuestionFormModal } from "@/components/question-form-modal";
+import { ScenarioQuestionCard } from "@/components/scenario-question-card";
+import { ScenarioQuestionFormModal } from "@/components/scenario-question-form-modal";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import type { QuestionItem } from "@/types/question";
+import type { ScenarioQuestionItem } from "@/types/scenario-question";
 
 type ApiResponse = {
-  questions?: QuestionItem[];
+  questions?: ScenarioQuestionItem[];
   error?: string;
 };
 
-export function InterviewQuestionsClient() {
-  const [questions, setQuestions] = useState<QuestionItem[]>([]);
+export function ScenarioQuestionsClient() {
+  const [questions, setQuestions] = useState<ScenarioQuestionItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState<QuestionItem | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<ScenarioQuestionItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [questionToDelete, setQuestionToDelete] = useState<QuestionItem | null>(null);
+  const [questionToDelete, setQuestionToDelete] = useState<ScenarioQuestionItem | null>(null);
 
   const fetchQuestions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/questions", {
+      const response = await fetch("/api/scenario-questions", {
         method: "GET",
         cache: "no-store",
       });
 
       const payload = (await response.json()) as ApiResponse;
       if (!response.ok || !payload.questions) {
-        throw new Error(payload.error ?? "Could not load questions.");
+        throw new Error(payload.error ?? "Could not load scenario questions.");
       }
 
       setQuestions(payload.questions);
     } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError.message : "Could not load questions.");
+      setError(fetchError instanceof Error ? fetchError.message : "Could not load scenario questions.");
     } finally {
       setIsLoading(false);
     }
@@ -70,23 +70,22 @@ export function InterviewQuestionsClient() {
     if (!questionToDelete) return;
 
     const id = questionToDelete._id;
-
     setDeletingId(id);
 
     try {
-      const response = await fetch(`/api/questions/${id}`, {
+      const response = await fetch(`/api/scenario-questions/${id}`, {
         method: "DELETE",
       });
 
       if (!response.ok) {
         const payload = (await response.json()) as { error?: string };
-        throw new Error(payload.error ?? "Could not delete question.");
+        throw new Error(payload.error ?? "Could not delete scenario question.");
       }
 
       setQuestions((prev) => prev.filter((item) => item._id !== id));
       setQuestionToDelete(null);
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Could not delete question.");
+      setError(deleteError instanceof Error ? deleteError.message : "Could not delete scenario question.");
     } finally {
       setDeletingId(null);
     }
@@ -97,9 +96,13 @@ export function InterviewQuestionsClient() {
       <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 backdrop-blur sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Question Bank</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">Interview Questions</h1>
-            <p className="mt-2 text-sm text-zinc-300">Latest questions appear first for faster revision.</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Scenario Bank</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">
+              Scenario Questions
+            </h1>
+            <p className="mt-2 text-sm text-zinc-300">
+              Latest scenarios appear first for faster revision.
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -109,10 +112,10 @@ export function InterviewQuestionsClient() {
                 Home
               </Button>
             </Link>
-            <Link href="/scenario-questions" className="inline-flex">
+            <Link href="/interview-questions" className="inline-flex">
               <Button variant="outline">
-                <Layers className="mr-2 h-4 w-4" />
-                Scenario Questions
+                <BookOpen className="mr-2 h-4 w-4" />
+                Technical Questions
               </Button>
             </Link>
             <Button
@@ -123,18 +126,27 @@ export function InterviewQuestionsClient() {
               }}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Add Question
+              Add Scenario
             </Button>
           </div>
         </div>
 
         <div className="mt-6 relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          <Input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search questions..." className="pl-9" />
+          <Input
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search scenario questions..."
+            className="pl-9"
+          />
         </div>
       </section>
 
-      {error ? <div className="mt-6 rounded-lg border border-red-800 bg-red-950/30 p-4 text-sm text-red-300">{error}</div> : null}
+      {error ? (
+        <div className="mt-6 rounded-lg border border-red-800 bg-red-950/30 p-4 text-sm text-red-300">
+          {error}
+        </div>
+      ) : null}
 
       <section className="mt-6 grid gap-4 sm:gap-5">
         {isLoading ? (
@@ -143,11 +155,15 @@ export function InterviewQuestionsClient() {
           </div>
         ) : filteredQuestions.length === 0 ? (
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-8 text-center">
-            <p className="text-zinc-300">{questions.length === 0 ? "No questions yet. Add your first one." : "No question matches your search."}</p>
+            <p className="text-zinc-300">
+              {questions.length === 0
+                ? "No scenario questions yet. Click 'Add Scenario' to create your first one."
+                : "No scenario matches your search."}
+            </p>
           </div>
         ) : (
           filteredQuestions.map((item, index) => (
-            <QuestionCard
+            <ScenarioQuestionCard
               key={item._id}
               question={item}
               index={index + 1}
@@ -162,7 +178,7 @@ export function InterviewQuestionsClient() {
         )}
       </section>
 
-      <QuestionFormModal
+      <ScenarioQuestionFormModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         initialQuestion={editingQuestion}
@@ -172,7 +188,9 @@ export function InterviewQuestionsClient() {
             return;
           }
 
-          setQuestions((prev) => prev.map((item) => (item._id === savedQuestion._id ? savedQuestion : item)));
+          setQuestions((prev) =>
+            prev.map((item) => (item._id === savedQuestion._id ? savedQuestion : item)),
+          );
           setEditingQuestion(null);
         }}
       />
@@ -187,17 +205,33 @@ export function InterviewQuestionsClient() {
       >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Delete Question</DialogTitle>
-            <DialogDescription>This action cannot be undone. This will permanently delete your saved interview question.</DialogDescription>
+            <DialogTitle>Delete Scenario Question</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete your scenario question and resolution.
+            </DialogDescription>
           </DialogHeader>
 
-          {questionToDelete ? <div className="rounded-md border border-zinc-800 bg-zinc-900/60 p-3 text-sm text-zinc-200">{questionToDelete.question}</div> : null}
+          {questionToDelete ? (
+            <div className="rounded-md border border-zinc-800 bg-zinc-900/60 p-3 text-sm text-zinc-200">
+              {questionToDelete.question}
+            </div>
+          ) : null}
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setQuestionToDelete(null)} disabled={Boolean(deletingId)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setQuestionToDelete(null)}
+              disabled={Boolean(deletingId)}
+            >
               Cancel
             </Button>
-            <Button type="button" variant="destructive" onClick={handleConfirmDelete} disabled={Boolean(deletingId)}>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={Boolean(deletingId)}
+            >
               {deletingId ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
