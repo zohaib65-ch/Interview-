@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, BookOpen, Plus, Search } from "lucide-react";
+import { ArrowLeft, BookOpen, Plus, Search, Sparkles } from "lucide-react";
 
 import { ScenarioQuestionCard } from "@/components/scenario-question-card";
 import { ScenarioQuestionFormModal } from "@/components/scenario-question-form-modal";
@@ -92,7 +92,7 @@ export function ScenarioQuestionsClient() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-14">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-14">
       <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 backdrop-blur sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -116,6 +116,12 @@ export function ScenarioQuestionsClient() {
               <Button variant="outline">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Technical Questions
+              </Button>
+            </Link>
+            <Link href="/ai-questions" className="inline-flex">
+              <Button variant="outline">
+                <Sparkles className="mr-2 h-4 w-4" />
+                AI Questions
               </Button>
             </Link>
             <Button

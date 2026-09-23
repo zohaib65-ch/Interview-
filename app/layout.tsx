@@ -14,8 +14,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PrepForge | Technical & Scenario Interview Prep",
-  description: "Personal technical and scenario-based interview preparation platform",
+  title: "PrepForge | Technical, Scenario & AI Interview Prep",
+  description: "Personal technical, scenario-based and AI interview preparation platform",
 };
 
 export default function RootLayout({
