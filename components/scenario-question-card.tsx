@@ -4,6 +4,7 @@ import { Edit3, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { normalizeAnswerHtml } from "@/lib/normalize-answer";
 import type { ScenarioQuestionItem } from "@/types/scenario-question";
 
 type ScenarioQuestionCardProps = {
@@ -23,12 +24,7 @@ export function ScenarioQuestionCard({ question, index, onEdit, onDelete, isDele
     minute: "2-digit",
   });
 
-  const normalizedAnswer = question.answer
-    .replace(/\u00a0/g, " ")
-    .replace(/\u00ad/g, "")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/([A-Za-z0-9])\s*<br\s*\/?>\s*([A-Za-z0-9])/g, "$1$2")
-    .replace(/([A-Za-z0-9])\r?\n([A-Za-z0-9])/g, "$1$2");
+  const normalizedAnswer = normalizeAnswerHtml(question.answer);
 
   return (
     <Card className="group relative overflow-hidden">

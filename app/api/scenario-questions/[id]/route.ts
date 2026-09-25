@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import sanitizeHtml from "sanitize-html";
 
 import { connectToDatabase } from "@/lib/mongoose";
+import { normalizeAnswerHtml } from "@/lib/normalize-answer";
 import ScenarioQuestion from "@/models/ScenarioQuestion";
 
 function toPlainText(html: string) {
@@ -10,16 +11,6 @@ function toPlainText(html: string) {
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-function normalizeAnswerHtml(answer: string) {
-  return answer
-    .replace(/\u00a0/g, " ")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/\u00ad/g, "")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/([A-Za-z0-9])\s*<br\s*\/?>\s*([A-Za-z0-9])/g, "$1$2")
-    .replace(/([A-Za-z0-9])\r?\n([A-Za-z0-9])/g, "$1$2");
 }
 
 function sanitizeAnswer(answer: string) {
