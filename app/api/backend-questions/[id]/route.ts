@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import sanitizeHtml from "sanitize-html";
 
+import { resolveCategoryInput, serializeCategoryId } from "@/lib/categories";
 import { connectToDatabase } from "@/lib/mongoose";
 import { normalizeAnswerHtml } from "@/lib/normalize-answer";
 import BackendQuestion from "@/models/BackendQuestion";
+
+const BANK = "backend";
 
 function toPlainText(html: string) {
   return html
@@ -26,11 +29,12 @@ function sanitizeAnswer(answer: string) {
   });
 }
 
-function serialize(item: { _id: { toString: () => string }; question: string; answer: string; createdAt: Date; updatedAt: Date }) {
+function serialize(item: { _id: { toString: () => string }; question: string; answer: string; category?: unknown; createdAt: Date; updatedAt: Date }) {
   return {
     _id: item._id.toString(),
     question: item.question,
     answer: normalizeAnswerHtml(item.answer),
+    category: serializeCategoryId(item.category),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
   };
@@ -51,6 +55,7 @@ export async function PUT(request: Request, context: RouteContext) {
     const body = (await request.json()) as {
       question?: string;
       answer?: string;
+      category?: unknown;
     };
 
     const question = body.question?.trim();
@@ -66,9 +71,16 @@ export async function PUT(request: Request, context: RouteContext) {
     }
 
     await connectToDatabase();
+
+    // `category` omitted = leave as is; null = move to Uncategorized; an id = move into that category.
+    const category = await resolveCategoryInput(BANK, body.category);
+    if (!category.ok) {
+      return NextResponse.json({ error: category.error }, { status: 400 });
+    }
+
     const updated = await BackendQuestion.findByIdAndUpdate(
       id,
-      { question, answer: safeAnswer },
+      { question, answer: safeAnswer, ...(category.value !== undefined ? { category: category.value } : {}) },
       { new: true }
     );
 

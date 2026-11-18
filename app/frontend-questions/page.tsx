@@ -1,16 +1,10 @@
-import { Suspense } from "react";
-
-import { FrontendQuestionsClient } from "@/components/frontend-questions-client";
+import { CategoryGridClient } from "@/components/category-grid-client";
 
 export const metadata = {
   title: "Frontend Questions | PrepForge",
-  description: "Frontend interview questions covering HTML, CSS, JavaScript, React and browsers, with detailed answers.",
+  description: "Frontend interview questions organized by category: React, Next.js, Vue and more.",
 };
 
 export default function FrontendQuestionsPage() {
-  return (
-    <Suspense fallback={null}>
-      <FrontendQuestionsClient />
-    </Suspense>
-  );
+  return <CategoryGridClient bank="frontend" />;
 }

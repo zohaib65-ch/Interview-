@@ -1,4 +1,4 @@
-export type QuestionBankKey = "technical" | "scenario" | "ai" | "frontend" | "backend";
+export type QuestionBankKey = "technical" | "scenario" | "ai" | "frontend" | "backend" | "systemdesign";
 
 export interface SearchResult {
   id: string;
@@ -6,6 +6,8 @@ export interface SearchResult {
   question: string;
   /** Short excerpt of the answer around the match. Only set when the match is not already visible in the question. */
   snippet: string | null;
+  /** Only present for categorized banks (Frontend, Backend). `null` means the question is Uncategorized. */
+  category?: { name: string; slug: string } | null;
 }
 
 export interface SearchResponse {

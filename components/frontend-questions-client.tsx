@@ -6,19 +6,33 @@ import { ArrowLeft, Plus, Search } from "lucide-react";
 
 import { FrontendQuestionCard } from "@/components/frontend-question-card";
 import { FrontendQuestionFormModal } from "@/components/frontend-question-form-modal";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFocusQuestion } from "@/hooks/use-focus-question";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { UNCATEGORIZED_SLUG, type CategoryRef } from "@/types/category";
 import type { FrontendQuestionItem } from "@/types/frontend-question";
+
+const BANK_HREF = "/frontend-questions";
 
 type ApiResponse = {
   questions?: FrontendQuestionItem[];
+  category?: CategoryRef | null;
   error?: string;
 };
 
-export function FrontendQuestionsClient() {
+type FrontendQuestionsClientProps = {
+  /** Category slug from the URL, or "uncategorized" for questions that have none. */
+  categorySlug: string;
+};
+
+export function FrontendQuestionsClient({ categorySlug }: FrontendQuestionsClientProps) {
+  const isUncategorized = categorySlug === UNCATEGORIZED_SLUG;
+
   const [questions, setQuestions] = useState<FrontendQuestionItem[]>([]);
+  const [category, setCategory] = useState<CategoryRef | null>(null);
+  const [categoryNotFound, setCategoryNotFound] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,10 +48,15 @@ export function FrontendQuestionsClient() {
     setError(null);
 
     try {
-      const response = await fetch("/api/frontend-questions", {
+      const response = await fetch(`/api/frontend-questions?category=${encodeURIComponent(categorySlug)}`, {
         method: "GET",
         cache: "no-store",
       });
+
+      if (response.status === 404) {
+        setCategoryNotFound(true);
+        return;
+      }
 
       const payload = (await response.json()) as ApiResponse;
       if (!response.ok || !payload.questions) {
@@ -45,12 +64,13 @@ export function FrontendQuestionsClient() {
       }
 
       setQuestions(payload.questions);
+      setCategory(payload.category ?? null);
     } catch (fetchError) {
       setError(fetchError instanceof Error ? fetchError.message : "Could not load frontend questions.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [categorySlug]);
 
   useEffect(() => {
     void fetchQuestions();
@@ -93,22 +113,50 @@ export function FrontendQuestionsClient() {
     }
   }
 
+  const title = isUncategorized ? "Uncategorized" : (category?.name ?? "Loading...");
+  // A question belongs on this page when its category matches the one being viewed (null = Uncategorized).
+  const currentCategoryId = category?._id ?? null;
+
+  if (categoryNotFound) {
+    return (
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-14">
+        <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 backdrop-blur sm:p-8">
+          <Link
+            href={BANK_HREF}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-100"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to Frontend
+          </Link>
+          <h1 className="mt-5 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">Category not found</h1>
+          <p className="mt-2 text-sm text-zinc-300">
+            This category may have been renamed or deleted. Pick one from the Frontend page instead.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-14">
       <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 backdrop-blur sm:p-8">
         <Link
-          href="/"
+          href={BANK_HREF}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-100"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Back to home
+          Back to Frontend
         </Link>
 
         <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Frontend Bank</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">Frontend Questions</h1>
-            <p className="mt-2 text-sm text-zinc-300">Latest frontend questions appear first for faster revision.</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">{title}</h1>
+            <p className="mt-2 text-sm text-zinc-300">
+              {isUncategorized
+                ? "Questions without a category. Edit a question to move it into one."
+                : "Latest questions appear first for faster revision."}
+            </p>
           </div>
 
           <Button
@@ -120,7 +168,7 @@ export function FrontendQuestionsClient() {
             }}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Frontend Question
+            Add Question
           </Button>
         </div>
 
@@ -134,16 +182,13 @@ export function FrontendQuestionsClient() {
               className="pl-9"
             />
           </div>
-          <span
-            className="inline-flex w-fit shrink-0 items-center rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-400"
-            aria-live="polite"
-          >
+          <Badge variant="outline" className="border-zinc-800 bg-zinc-900/90 px-3 py-1.5 font-normal text-zinc-400" aria-live="polite">
             {isLoading
               ? "Loading..."
               : searchQuery.trim()
                 ? `${filteredQuestions.length} of ${questions.length} shown`
                 : `${questions.length} ${questions.length === 1 ? "question" : "questions"}`}
-          </span>
+          </Badge>
         </div>
       </section>
 
@@ -162,8 +207,8 @@ export function FrontendQuestionsClient() {
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-8 text-center">
             <p className="text-zinc-300">
               {questions.length === 0
-                ? "No frontend questions yet. Click 'Add Frontend Question' to create your first one."
-                : "No frontend question matches your search."}
+                ? `No questions in ${title} yet. Click 'Add Question' to create your first one.`
+                : "No question matches your search."}
             </p>
           </div>
         ) : (
@@ -192,14 +237,20 @@ export function FrontendQuestionsClient() {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         initialQuestion={editingQuestion}
+        defaultCategoryId={currentCategoryId}
         onSuccess={(savedQuestion, mode) => {
+          const belongsHere = savedQuestion.category === currentCategoryId;
+
           if (mode === "create") {
-            setQuestions((prev) => [savedQuestion, ...prev]);
+            // Saved into a different category via the dropdown: it lives there now, not in this list.
+            if (belongsHere) setQuestions((prev) => [savedQuestion, ...prev]);
             return;
           }
 
           setQuestions((prev) =>
-            prev.map((item) => (item._id === savedQuestion._id ? savedQuestion : item)),
+            belongsHere
+              ? prev.map((item) => (item._id === savedQuestion._id ? savedQuestion : item))
+              : prev.filter((item) => item._id !== savedQuestion._id),
           );
           setEditingQuestion(null);
         }}

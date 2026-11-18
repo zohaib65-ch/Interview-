@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import sanitizeHtml from "sanitize-html";
 
+import { resolveCategoryFilter, resolveCategoryInput, serializeCategoryId } from "@/lib/categories";
 import { connectToDatabase } from "@/lib/mongoose";
 import { normalizeAnswerHtml } from "@/lib/normalize-answer";
 import BackendQuestion from "@/models/BackendQuestion";
+
+const BANK = "backend";
 
 function toPlainText(html: string) {
   return html
@@ -25,23 +28,35 @@ function sanitizeAnswer(answer: string) {
   });
 }
 
-function serialize(item: { _id: { toString: () => string }; question: string; answer: string; createdAt: Date; updatedAt: Date }) {
+function serialize(item: { _id: { toString: () => string }; question: string; answer: string; category?: unknown; createdAt: Date; updatedAt: Date }) {
   return {
     _id: item._id.toString(),
     question: item.question,
     answer: normalizeAnswerHtml(item.answer),
+    category: serializeCategoryId(item.category),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
   };
 }
 
-export async function GET() {
+// `?category=<slug>` limits the list to one category, `?category=uncategorized` to questions without one.
+// With no param every question is returned.
+export async function GET(request: Request) {
   try {
     await connectToDatabase();
-    const questions = await BackendQuestion.find().sort({ createdAt: -1 }).lean();
+
+    const scope = await resolveCategoryFilter(BANK, new URL(request.url).searchParams.get("category"));
+    if (!scope.ok) {
+      return NextResponse.json({ error: "Category not found." }, { status: 404 });
+    }
+
+    const questions = await BackendQuestion.find(scope.filter).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json({
       questions: questions.map((item) => serialize(item)),
+      category: scope.category
+        ? { _id: String(scope.category._id), name: scope.category.name, slug: scope.category.slug }
+        : null,
     });
   } catch (error) {
     console.error("Failed to fetch backend questions", error);
@@ -54,6 +69,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       question?: string;
       answer?: string;
+      category?: unknown;
     };
 
     const question = body.question?.trim();
@@ -69,9 +85,16 @@ export async function POST(request: Request) {
     }
 
     await connectToDatabase();
+
+    const category = await resolveCategoryInput(BANK, body.category);
+    if (!category.ok) {
+      return NextResponse.json({ error: category.error }, { status: 400 });
+    }
+
     const created = await BackendQuestion.create({
       question,
       answer: safeAnswer,
+      category: category.value ?? null,
     });
 
     return NextResponse.json({ question: serialize(created) }, { status: 201 });

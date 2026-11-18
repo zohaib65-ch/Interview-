@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { ArrowLeft, ArrowUp, Bot, Check, Copy, RotateCcw, Sparkles, Square, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 type ChatMessage = {
   id: string;
@@ -209,14 +210,15 @@ export function AiChatClient() {
               </p>
               <div className="mt-6 grid w-full max-w-2xl gap-2 sm:grid-cols-2">
                 {SUGGESTED_PROMPTS.map((prompt) => (
-                  <button
+                  <Button
                     key={prompt}
                     type="button"
+                    variant="outline"
                     onClick={() => handleSubmit(prompt)}
-                    className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-3 text-left text-sm text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-100"
+                    className="h-auto justify-start rounded-xl border-zinc-800 bg-zinc-900/60 p-3 text-left font-normal whitespace-normal text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-100"
                   >
                     {prompt}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -255,14 +257,16 @@ export function AiChatClient() {
                         </article>
                       ) : null}
                       {message.content && !(isStreaming && message.id === lastMessage?.id) ? (
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleCopy(message)}
-                          className="mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-zinc-500 transition hover:bg-zinc-900 hover:text-zinc-300"
+                          className="mt-1 h-auto gap-1 px-1.5 py-1 text-xs font-normal text-zinc-500 hover:text-zinc-300"
                         >
                           {copiedId === message.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                           {copiedId === message.id ? "Copied" : "Copy"}
-                        </button>
+                        </Button>
                       ) : null}
                     </div>
                   </div>
@@ -298,7 +302,7 @@ export function AiChatClient() {
           className="shrink-0 border-t border-zinc-800 p-3 sm:p-4"
         >
           <div className="flex items-end gap-2 rounded-xl border border-zinc-700 bg-zinc-900/70 p-2 focus-within:border-zinc-500">
-            <textarea
+            <Textarea
               ref={textareaRef}
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -310,7 +314,7 @@ export function AiChatClient() {
               }}
               rows={1}
               placeholder="Ask an interview question..."
-              className="max-h-[200px] min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-500"
+              className="max-h-[200px] min-h-10 flex-1 resize-none rounded-none border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
             />
             {isStreaming ? (
               <Button type="button" variant="outline" size="icon" onClick={() => abortRef.current?.abort()} aria-label="Stop generating">

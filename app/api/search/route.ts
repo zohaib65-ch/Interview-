@@ -5,8 +5,11 @@ import { connectToDatabase } from "@/lib/mongoose";
 import AiQuestion from "@/models/AiQuestion";
 import BackendQuestion from "@/models/BackendQuestion";
 import FrontendQuestion from "@/models/FrontendQuestion";
+import Category from "@/models/Category";
 import Question from "@/models/Question";
 import ScenarioQuestion from "@/models/ScenarioQuestion";
+import SystemDesignQuestion from "@/models/SystemDesignQuestion";
+import { isCategoryBankKey } from "@/types/category";
 import type { QuestionBankKey, SearchResponse, SearchResult } from "@/types/search";
 
 export const dynamic = "force-dynamic";
@@ -17,15 +20,17 @@ const MAX_TERMS = 8;
 const MAX_RESULTS_PER_BANK = 8;
 const SNIPPET_RADIUS = 70;
 
-type Row = { _id: { toString: () => string }; question: string; answer: string };
+type CategoryInfo = { name: string; slug: string };
+type Row = { _id: { toString: () => string }; question: string; answer: string; category?: unknown };
 
 // Every bank stores the same { question, answer } shape, so they are searched uniformly.
 const SOURCES: { bank: QuestionBankKey; load: () => Promise<Row[]> }[] = [
   { bank: "technical", load: () => Question.find().select("question answer").lean().exec() },
   { bank: "scenario", load: () => ScenarioQuestion.find().select("question answer").lean().exec() },
   { bank: "ai", load: () => AiQuestion.find().select("question answer").lean().exec() },
-  { bank: "frontend", load: () => FrontendQuestion.find().select("question answer").lean().exec() },
-  { bank: "backend", load: () => BackendQuestion.find().select("question answer").lean().exec() },
+  { bank: "frontend", load: () => FrontendQuestion.find().select("question answer category").lean().exec() },
+  { bank: "backend", load: () => BackendQuestion.find().select("question answer category").lean().exec() },
+  { bank: "systemdesign", load: () => SystemDesignQuestion.find().select("question answer").lean().exec() },
 ];
 
 function buildSnippet(answerText: string, answerLower: string, anchor: string) {
@@ -38,7 +43,13 @@ function buildSnippet(answerText: string, answerLower: string, anchor: string) {
   return `${start > 0 ? "…" : ""}${answerText.slice(start, end).trim()}${end < answerText.length ? "…" : ""}`;
 }
 
-function matchRow(bank: QuestionBankKey, row: Row, terms: string[], phrase: string) {
+function matchRow(
+  bank: QuestionBankKey,
+  row: Row,
+  terms: string[],
+  phrase: string,
+  categories: Map<string, CategoryInfo>,
+) {
   const questionLower = row.question.toLowerCase();
   const answerText = htmlToPlainText(row.answer);
   const answerLower = answerText.toLowerCase();
@@ -63,6 +74,10 @@ function matchRow(bank: QuestionBankKey, row: Row, terms: string[], phrase: stri
   const snippet = anchor ? buildSnippet(answerText, answerLower, anchor) : null;
 
   const result: SearchResult = { id: row._id.toString(), bank, question: row.question, snippet };
+  if (isCategoryBankKey(bank)) {
+    result.category = row.category ? (categories.get(String(row.category)) ?? null) : null;
+  }
+
   return { result, score };
 }
 
@@ -78,14 +93,20 @@ export async function GET(request: Request) {
     const terms = Array.from(new Set(phrase.split(/\s+/).filter(Boolean))).slice(0, MAX_TERMS);
 
     await connectToDatabase();
-    const banks = await Promise.all(SOURCES.map(async (source) => ({ bank: source.bank, rows: await source.load() })));
+    const [banks, categoryDocs] = await Promise.all([
+      Promise.all(SOURCES.map(async (source) => ({ bank: source.bank, rows: await source.load() }))),
+      Category.find().select("name slug").lean().exec(),
+    ]);
+    const categories = new Map<string, CategoryInfo>(
+      categoryDocs.map((category) => [String(category._id), { name: category.name, slug: category.slug }]),
+    );
 
     const results: SearchResult[] = [];
     const totals: SearchResponse["totals"] = {};
 
     for (const { bank, rows } of banks) {
       const matches = rows
-        .map((row) => matchRow(bank, row, terms, phrase))
+        .map((row) => matchRow(bank, row, terms, phrase, categories))
         .filter((match): match is NonNullable<typeof match> => match !== null)
         .sort((a, b) => b.score - a.score);
 

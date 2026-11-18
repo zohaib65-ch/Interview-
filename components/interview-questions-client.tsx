@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Search } from "lucide-react";
 
 import { QuestionCard } from "@/components/question-card";
 import { QuestionFormModal } from "@/components/question-form-modal";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFocusQuestion } from "@/hooks/use-focus-question";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -135,16 +136,13 @@ export function InterviewQuestionsClient() {
               className="pl-9"
             />
           </div>
-          <span
-            className="inline-flex w-fit shrink-0 items-center rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-400"
-            aria-live="polite"
-          >
+          <Badge variant="outline" className="border-zinc-800 bg-zinc-900/90 px-3 py-1.5 font-normal text-zinc-400" aria-live="polite">
             {isLoading
               ? "Loading..."
               : searchQuery.trim()
                 ? `${filteredQuestions.length} of ${questions.length} shown`
                 : `${questions.length} ${questions.length === 1 ? "question" : "questions"}`}
-          </span>
+          </Badge>
         </div>
       </section>
 
