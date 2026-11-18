@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Bot, Layers, Sparkles, Terminal, UserRound } from "lucide-react";
+import { BookOpen, Bot, Layers, Sparkles, Terminal } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -25,12 +25,6 @@ export function Navbar() {
       href: "/ai-questions",
       icon: Sparkles,
       active: pathname === "/ai-questions",
-    },
-    {
-      label: "Asad's Questions",
-      href: "/asad-questions",
-      icon: UserRound,
-      active: pathname === "/asad-questions",
     },
     {
       label: "AI Chat",
