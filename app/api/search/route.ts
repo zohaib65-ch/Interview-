@@ -6,8 +6,6 @@ import AiQuestion from "@/models/AiQuestion";
 import BackendQuestion from "@/models/BackendQuestion";
 import FrontendQuestion from "@/models/FrontendQuestion";
 import Category from "@/models/Category";
-import Question from "@/models/Question";
-import ScenarioQuestion from "@/models/ScenarioQuestion";
 import SystemDesignQuestion from "@/models/SystemDesignQuestion";
 import { isCategoryBankKey } from "@/types/category";
 import type { QuestionBankKey, SearchResponse, SearchResult } from "@/types/search";
@@ -25,8 +23,6 @@ type Row = { _id: { toString: () => string }; question: string; answer: string; 
 
 // Every bank stores the same { question, answer } shape, so they are searched uniformly.
 const SOURCES: { bank: QuestionBankKey; load: () => Promise<Row[]> }[] = [
-  { bank: "technical", load: () => Question.find().select("question answer").lean().exec() },
-  { bank: "scenario", load: () => ScenarioQuestion.find().select("question answer").lean().exec() },
   { bank: "ai", load: () => AiQuestion.find().select("question answer").lean().exec() },
   { bank: "frontend", load: () => FrontendQuestion.find().select("question answer category").lean().exec() },
   { bank: "backend", load: () => BackendQuestion.find().select("question answer category").lean().exec() },

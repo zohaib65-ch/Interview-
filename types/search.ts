@@ -1,4 +1,4 @@
-export type QuestionBankKey = "technical" | "scenario" | "ai" | "frontend" | "backend" | "systemdesign";
+export type QuestionBankKey = "ai" | "frontend" | "backend" | "systemdesign";
 
 export interface SearchResult {
   id: string;

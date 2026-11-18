@@ -14,7 +14,7 @@ type CategoryFormModalProps = {
   onOpenChange: (open: boolean) => void;
   bank: CategoryBankKey;
   bankLabel: string;
-  onSuccess: (category: CategoryItem, mode: "create" | "edit") => void;
+  onSuccess: () => void;
   /** When set the dialog renames this category instead of creating a new one. */
   initialCategory?: CategoryItem | null;
 };
@@ -53,7 +53,7 @@ function CategoryForm({ onOpenChange, bank, bankLabel, onSuccess, initialCategor
         throw new Error(payload.error ?? "Could not save category.");
       }
 
-      onSuccess(payload.category, isEditMode ? "edit" : "create");
+      onSuccess();
       onOpenChange(false);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Could not save category.");

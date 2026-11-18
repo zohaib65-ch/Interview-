@@ -215,7 +215,7 @@ export function AiQuestionsClient() {
           <DialogHeader>
             <DialogTitle>Delete AI Question</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your AI question and resolution.
+              This action cannot be undone. This will permanently delete this AI question and its answer.
             </DialogDescription>
           </DialogHeader>
 

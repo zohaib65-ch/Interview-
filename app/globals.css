@@ -4,13 +4,9 @@
 :root {
   --background: #09090b;
   --foreground: #f4f4f5;
-  --muted: #a1a1aa;
-  --card: #111114;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-space-grotesk);
   --font-mono: var(--font-jetbrains-mono);
 }
@@ -72,8 +68,6 @@ body {
 .prose-qa p {
   margin-bottom: 0.75rem;
   line-height: 1.75;
-  word-break: normal;
-  overflow-wrap: normal;
 }
 
 .prose-qa ul,
@@ -93,15 +87,11 @@ body {
 
 .prose-qa li {
   margin: 0.3rem 0;
-  word-break: normal;
-  overflow-wrap: normal;
 }
 
 .prose-qa a {
   color: #f4f4f5;
   text-decoration: underline;
-  word-break: normal;
-  overflow-wrap: normal;
 }
 
 .prose-qa blockquote {
@@ -109,8 +99,6 @@ body {
   border-left: 2px solid #3f3f46;
   padding-left: 0.85rem;
   color: #d4d4d8;
-  word-break: normal;
-  overflow-wrap: normal;
 }
 
 .prose-qa pre {
@@ -118,15 +106,8 @@ body {
   border-radius: 0.5rem;
   background-color: #09090b;
   padding: 0.75rem;
-  word-break: normal;
-  overflow-wrap: normal;
   white-space: pre-wrap;
   max-width: 100%;
-}
-
-.prose-qa code {
-  word-break: normal;
-  overflow-wrap: normal;
 }
 
 .prose-qa h1,

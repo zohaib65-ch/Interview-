@@ -195,7 +195,7 @@ export function GlobalSearch() {
         open={open}
         onOpenChange={changeOpen}
         title="Search all questions"
-        description="Search technical, scenario, AI, frontend, backend and system design / database questions and answers."
+        description="Search frontend, backend, AI and system design / database questions and answers."
         className="top-[10vh] max-w-2xl translate-y-0"
         // Results are already filtered on the server, so cmdk must not filter or re-order them again.
         commandProps={{

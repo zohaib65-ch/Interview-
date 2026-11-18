@@ -27,7 +27,7 @@ export function AiQuestionCard({ question, index, onEdit, onDelete, isDeleting }
   const normalizedAnswer = normalizeAnswerHtml(question.answer);
 
   return (
-    <Card className="group relative overflow-hidden">
+    <Card className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.07),transparent_60%)]" />
       <CardHeader className="relative pb-0 px-5 pt-5">
         <div className="flex flex-wrap items-start justify-between gap-3">

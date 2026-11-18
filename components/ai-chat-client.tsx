@@ -235,7 +235,7 @@ export function AiChatClient() {
                     </div>
                   </div>
                 ) : (
-                  <div key={message.id} className="group flex gap-3">
+                  <div key={message.id} className="flex gap-3">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900">
                       <Bot className="h-4 w-4 text-zinc-300" />
                     </div>

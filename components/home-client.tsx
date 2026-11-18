@@ -2,56 +2,44 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BookOpen, Bot, CircleCheckBig, Database, Layers, Monitor, Plus, Server } from "lucide-react";
+import { ArrowRight, Bot, CircleCheckBig, Database, Monitor, Plus, Server } from "lucide-react";
 
-import { QuestionFormModal } from "@/components/question-form-modal";
 import { AiQuestionFormModal } from "@/components/ai-question-form-modal";
 import { BackendQuestionFormModal } from "@/components/backend-question-form-modal";
 import { FrontendQuestionFormModal } from "@/components/frontend-question-form-modal";
-import { ScenarioQuestionFormModal } from "@/components/scenario-question-form-modal";
 import { SystemDesignQuestionFormModal } from "@/components/system-design-question-form-modal";
 import { Button } from "@/components/ui/button";
 import type { AiQuestionItem } from "@/types/ai-question";
 import type { BackendQuestionItem } from "@/types/backend-question";
 import type { FrontendQuestionItem } from "@/types/frontend-question";
-import type { QuestionItem } from "@/types/question";
-import type { ScenarioQuestionItem } from "@/types/scenario-question";
 import type { SystemDesignQuestionItem } from "@/types/system-design-question";
 
 export function HomeClient() {
-  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
-  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isFrontendModalOpen, setIsFrontendModalOpen] = useState(false);
   const [isBackendModalOpen, setIsBackendModalOpen] = useState(false);
   const [isSystemDesignModalOpen, setIsSystemDesignModalOpen] = useState(false);
 
   const [lastSaved, setLastSaved] = useState<{
-    type: "technical" | "scenario" | "ai" | "frontend" | "backend" | "systemdesign";
+    type: "ai" | "frontend" | "backend" | "systemdesign";
     title: string;
   } | null>(null);
 
   return (
     <main className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 py-8 sm:px-8 sm:py-12">
-      <div className="absolute inset-0 -z-10 " />
-
       {/* Save confirmation */}
       {lastSaved ? (
         <div className="mb-8 flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/90 p-4 text-zinc-200">
           <CircleCheckBig className="h-5 w-5 text-emerald-400 shrink-0" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-              {lastSaved.type === "technical"
-                ? "Technical Question Saved"
-                : lastSaved.type === "scenario"
-                  ? "Scenario Question Saved"
-                  : lastSaved.type === "ai"
-                    ? "AI Question Saved"
-                    : lastSaved.type === "frontend"
-                      ? "Frontend Question Saved"
-                      : lastSaved.type === "backend"
-                        ? "Backend Question Saved"
-                        : "System Design / Database Question Saved"}
+              {lastSaved.type === "ai"
+                ? "AI Question Saved"
+                : lastSaved.type === "frontend"
+                  ? "Frontend Question Saved"
+                  : lastSaved.type === "backend"
+                    ? "Backend Question Saved"
+                    : "System Design / Database Question Saved"}
             </p>
             <p className="text-sm font-medium text-zinc-100">{lastSaved.title}</p>
           </div>
@@ -60,7 +48,7 @@ export function HomeClient() {
 
       {/* Dedicated Track Cards */}
       <section className="grid gap-6 md:grid-cols-2">
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
+        <div className="relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
           <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
           <div>
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
@@ -91,7 +79,7 @@ export function HomeClient() {
             </Link>
           </div>
         </div>
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
+        <div className="relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
           <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
           <div>
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
@@ -122,77 +110,14 @@ export function HomeClient() {
             </Link>
           </div>
         </div>
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
-          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
-          <div>
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
-              <BookOpen className="h-5 w-5 text-zinc-300" />
-            </div>
-
-            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 03 • Technical</p>
-            <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-50">Technical Interview Questions</h2>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-              Core concept questions, algorithms, syntax fundamentals, and standard technical Q&amp;A with rich-text formatted answers.
-            </p>
-          </div>
-
-          <div className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-3">
-            <Button
-              variant="primary"
-              onClick={() => setIsQuestionModalOpen(true)}
-              className="w-full"
-            >
-              <Plus className="mr-1.5 h-4 w-4" />
-              Add Technical Question
-            </Button>
-            <Link href="/interview-questions">
-              <Button variant="outline" className="w-full">
-                Open Questions
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
-          <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
-          <div>
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
-              <Layers className="h-5 w-5 text-zinc-300" />
-            </div>
-
-            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 04 • Scenarios</p>
-            <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-50">Scenario-Based Questions</h2>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-              Real-world situational challenges, production outages, architectural trade-offs, and step-by-step resolution walkthroughs.
-            </p>
-          </div>
-
-          <div className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-3">
-            <Button
-              variant="primary"
-              onClick={() => setIsScenarioModalOpen(true)}
-              className="w-full"
-            >
-              <Plus className="mr-1.5 h-4 w-4" />
-              Add Scenario Question
-            </Button>
-            <Link href="/scenario-questions">
-              <Button variant="outline" className="w-full">
-                Open Scenarios
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
+        <div className="relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
           <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
           <div>
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
               <Bot className="h-5 w-5 text-zinc-300" />
             </div>
 
-            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 05 • AI</p>
+            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 03 • AI</p>
             <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-50">AI Based Questions</h2>
             <p className="mt-3 text-sm leading-relaxed text-zinc-400">
               Machine learning, LLMs, prompt engineering, RAG, embeddings, and AI system design questions with detailed answers.
@@ -216,18 +141,16 @@ export function HomeClient() {
             </Link>
           </div>
         </div>
-        
-       
 
-        {/* Track 6: System Design / Database */}
-        <div className="group relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
+        {/* Track 4: System Design / Database */}
+        <div className="relative flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 transition-all hover:border-zinc-700 sm:p-8">
           <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.05),transparent_50%)]" />
           <div>
             <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-200 shadow-sm">
               <Database className="h-5 w-5 text-zinc-300" />
             </div>
 
-            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 06 • System Design</p>
+            <p className="mt-5 text-xs font-mono uppercase tracking-[0.2em] text-zinc-400">Track 04 • System Design</p>
             <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-zinc-50">System Design / Database</h2>
             <p className="mt-3 text-sm leading-relaxed text-zinc-400">
               Database design, SQL and NoSQL, indexing, transactions, caching, scaling, and system design questions with detailed answers.
@@ -254,27 +177,6 @@ export function HomeClient() {
       </section>
 
       {/* Modals */}
-      <QuestionFormModal
-        open={isQuestionModalOpen}
-        onOpenChange={setIsQuestionModalOpen}
-        onSuccess={(question: QuestionItem) =>
-          setLastSaved({
-            type: "technical",
-            title: question.question,
-          })
-        }
-      />
-
-      <ScenarioQuestionFormModal
-        open={isScenarioModalOpen}
-        onOpenChange={setIsScenarioModalOpen}
-        onSuccess={(scenario: ScenarioQuestionItem) =>
-          setLastSaved({
-            type: "scenario",
-            title: scenario.question,
-          })
-        }
-      />
       <AiQuestionFormModal
         open={isAiModalOpen}
         onOpenChange={setIsAiModalOpen}
