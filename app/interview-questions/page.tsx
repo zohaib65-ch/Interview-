@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { InterviewQuestionsClient } from "@/components/interview-questions-client";
 
 export const metadata = {
@@ -6,5 +8,9 @@ export const metadata = {
 };
 
 export default function InterviewQuestionsPage() {
-  return <InterviewQuestionsClient />;
+  return (
+    <Suspense fallback={null}>
+      <InterviewQuestionsClient />
+    </Suspense>
+  );
 }

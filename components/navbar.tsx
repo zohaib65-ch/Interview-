@@ -2,30 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Bot, Layers, Sparkles, Terminal } from "lucide-react";
+import { Bot, Terminal } from "lucide-react";
+
+import { GlobalSearch } from "@/components/global-search";
 
 export function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
-    {
-      label: "Technical Questions",
-      href: "/interview-questions",
-      icon: BookOpen,
-      active: pathname === "/interview-questions",
-    },
-    {
-      label: "Scenario Questions",
-      href: "/scenario-questions",
-      icon: Layers,
-      active: pathname === "/scenario-questions",
-    },
-    {
-      label: "AI Questions",
-      href: "/ai-questions",
-      icon: Sparkles,
-      active: pathname === "/ai-questions",
-    },
     {
       label: "AI Chat",
       href: "/ai-chat",
@@ -47,27 +31,30 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1.5 sm:gap-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-label={item.label}
-                title={item.label}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium transition-all ${
-                  item.active
-                    ? "bg-zinc-800 text-zinc-50 shadow-inner"
-                    : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
-                }`}
-              >
-                <Icon className={`h-4 w-4 lg:h-3.5 lg:w-3.5 ${item.active ? "text-zinc-100" : "text-zinc-400"}`} />
-                <span className="hidden lg:inline">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <GlobalSearch />
+          <nav className="flex items-center gap-1.5 sm:gap-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-label={item.label}
+                  title={item.label}
+                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium transition-all ${
+                    item.active
+                      ? "bg-zinc-800 text-zinc-50 shadow-inner"
+                      : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 lg:h-3.5 lg:w-3.5 ${item.active ? "text-zinc-100" : "text-zinc-400"}`} />
+                  <span className="hidden lg:inline">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
       </div>
     </header>
   );

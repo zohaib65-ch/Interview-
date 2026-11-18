@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { ScenarioQuestionsClient } from "@/components/scenario-questions-client";
 
 export const metadata = {
@@ -6,5 +8,9 @@ export const metadata = {
 };
 
 export default function ScenarioQuestionsPage() {
-  return <ScenarioQuestionsClient />;
+  return (
+    <Suspense fallback={null}>
+      <ScenarioQuestionsClient />
+    </Suspense>
+  );
 }

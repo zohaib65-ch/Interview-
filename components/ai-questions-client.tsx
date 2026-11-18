@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, BookOpen, Layers, Plus, Search } from "lucide-react";
+import { ArrowLeft, Plus, Search } from "lucide-react";
 
 import { AiQuestionCard } from "@/components/ai-question-card";
 import { AiQuestionFormModal } from "@/components/ai-question-form-modal";
 import { Button } from "@/components/ui/button";
+import { useFocusQuestion } from "@/hooks/use-focus-question";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import type { AiQuestionItem } from "@/types/ai-question";
@@ -26,6 +27,7 @@ export function AiQuestionsClient() {
   const [editingQuestion, setEditingQuestion] = useState<AiQuestionItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [questionToDelete, setQuestionToDelete] = useState<AiQuestionItem | null>(null);
+  useFocusQuestion(!isLoading);
 
   const fetchQuestions = useCallback(async () => {
     setIsLoading(true);
@@ -94,57 +96,54 @@ export function AiQuestionsClient() {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-14">
       <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 backdrop-blur sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-100"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to home
+        </Link>
+
+        <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">AI Bank</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">
-              AI Based Questions
-            </h1>
-            <p className="mt-2 text-sm text-zinc-300">
-              Latest AI questions appear first for faster revision.
-            </p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">AI Based Questions</h1>
+            <p className="mt-2 text-sm text-zinc-300">Latest AI questions appear first for faster revision.</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/" className="inline-flex">
-              <Button variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Home
-              </Button>
-            </Link>
-            <Link href="/interview-questions" className="inline-flex">
-              <Button variant="outline">
-                <BookOpen className="mr-2 h-4 w-4" />
-                Technical Questions
-              </Button>
-            </Link>
-            <Link href="/scenario-questions" className="inline-flex">
-              <Button variant="outline">
-                <Layers className="mr-2 h-4 w-4" />
-                Scenario Questions
-              </Button>
-            </Link>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setEditingQuestion(null);
-                setIsModalOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add AI Question
-            </Button>
-          </div>
+          <Button
+            variant="primary"
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setEditingQuestion(null);
+              setIsModalOpen(true);
+            }}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add AI Question
+          </Button>
         </div>
 
-        <div className="mt-6 relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          <Input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search AI questions..."
-            className="pl-9"
-          />
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <Input
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search AI questions..."
+              className="pl-9"
+            />
+          </div>
+          <span
+            className="inline-flex w-fit shrink-0 items-center rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-400"
+            aria-live="polite"
+          >
+            {isLoading
+              ? "Loading..."
+              : searchQuery.trim()
+                ? `${filteredQuestions.length} of ${questions.length} shown`
+                : `${questions.length} ${questions.length === 1 ? "question" : "questions"}`}
+          </span>
         </div>
       </section>
 
@@ -169,17 +168,22 @@ export function AiQuestionsClient() {
           </div>
         ) : (
           filteredQuestions.map((item, index) => (
-            <AiQuestionCard
+            <div
               key={item._id}
-              question={item}
-              index={index + 1}
-              onEdit={(question) => {
-                setEditingQuestion(question);
-                setIsModalOpen(true);
-              }}
-              onDelete={handleRequestDelete}
-              isDeleting={deletingId === item._id}
-            />
+              id={`q-${item._id}`}
+              className="scroll-mt-24 rounded-xl transition-shadow duration-500 data-[highlighted=true]:ring-2 data-[highlighted=true]:ring-zinc-300/70 data-[highlighted=true]:ring-offset-2 data-[highlighted=true]:ring-offset-zinc-950"
+            >
+              <AiQuestionCard
+                question={item}
+                index={index + 1}
+                onEdit={(question) => {
+                  setEditingQuestion(question);
+                  setIsModalOpen(true);
+                }}
+                onDelete={handleRequestDelete}
+                isDeleting={deletingId === item._id}
+              />
+            </div>
           ))
         )}
       </section>

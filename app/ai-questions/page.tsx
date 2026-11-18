@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { AiQuestionsClient } from "@/components/ai-questions-client";
 
 export const metadata = {
@@ -6,5 +8,9 @@ export const metadata = {
 };
 
 export default function AiQuestionsPage() {
-  return <AiQuestionsClient />;
+  return (
+    <Suspense fallback={null}>
+      <AiQuestionsClient />
+    </Suspense>
+  );
 }
