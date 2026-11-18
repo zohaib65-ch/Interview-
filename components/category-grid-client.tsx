@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Folder, Inbox, Pencil, Plus, Trash2 } from "lucide-react";
 
+import { ExportPdfButton } from "@/components/export-pdf-button";
 import { CategoryFormModal } from "@/components/category-form-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,10 +142,13 @@ export function CategoryGridClient({ bank: bankKey }: CategoryGridClientProps) {
             <p className="mt-2 text-sm text-zinc-300">Pick a category to see its questions.</p>
           </div>
 
-          <Button variant="primary" className="w-full sm:w-auto" onClick={openCreate}>
-            <Plus className="mr-2 h-4 w-4" />
-            New category
-          </Button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <ExportPdfButton bank={bank.key} disabled={isLoading || totalQuestions === 0} />
+            <Button variant="primary" className="w-full sm:w-auto" onClick={openCreate}>
+              <Plus className="mr-2 h-4 w-4" />
+              New category
+            </Button>
+          </div>
         </div>
 
         {!isLoading && !error ? (

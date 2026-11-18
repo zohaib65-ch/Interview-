@@ -1,0 +1,6 @@
+Fonts used only to render the PDF export (lib/pdf). They are Latin-subset builds of:
+
+  Inter           Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)
+  JetBrains Mono  Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)
+
+Both are licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org

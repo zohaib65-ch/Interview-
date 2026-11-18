@@ -7,6 +7,8 @@ export interface QuestionBank {
   key: QuestionBankKey;
   label: string;
   href: string;
+  /** REST collection that lists this bank's questions. */
+  apiPath: string;
   icon: LucideIcon;
   /** Questions in this bank are grouped into user-managed categories (`/<href>/<category-slug>`). */
   categorized?: boolean;
@@ -16,11 +18,12 @@ export interface QuestionBank {
 
 /** Display order is also the order search results are grouped in. */
 export const QUESTION_BANKS: QuestionBank[] = [
-  { key: "ai", label: "AI", href: "/ai-questions", icon: Sparkles },
+  { key: "ai", label: "AI", href: "/ai-questions", apiPath: "/api/ai-questions", icon: Sparkles },
   {
     key: "frontend",
     label: "Frontend",
     href: "/frontend-questions",
+    apiPath: "/api/frontend-questions",
     icon: Monitor,
     categorized: true,
     categorySuggestions: ["React", "Next.js", "Vue", "Angular", "JavaScript", "TypeScript", "HTML & CSS"],
@@ -29,11 +32,12 @@ export const QUESTION_BANKS: QuestionBank[] = [
     key: "backend",
     label: "Backend",
     href: "/backend-questions",
+    apiPath: "/api/backend-questions",
     icon: Server,
     categorized: true,
     categorySuggestions: ["Node.js", "Express", "SQL", "NoSQL", "System Design", "Authentication", "Caching"],
   },
-  { key: "systemdesign", label: "System Design / Database", href: "/system-design-questions", icon: Database },
+  { key: "systemdesign", label: "System Design / Database", href: "/system-design-questions", apiPath: "/api/system-design-questions", icon: Database },
 ];
 
 export function getBank(key: QuestionBankKey) {

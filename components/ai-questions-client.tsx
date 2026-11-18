@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Plus, Search } from "lucide-react";
 
+import { ExportPdfButton } from "@/components/export-pdf-button";
 import { AiQuestionCard } from "@/components/ai-question-card";
 import { AiQuestionFormModal } from "@/components/ai-question-form-modal";
 import { Badge } from "@/components/ui/badge";
@@ -112,17 +113,20 @@ export function AiQuestionsClient() {
             <p className="mt-2 text-sm text-zinc-300">Latest AI questions appear first for faster revision.</p>
           </div>
 
-          <Button
-            variant="primary"
-            className="w-full sm:w-auto"
-            onClick={() => {
-              setEditingQuestion(null);
-              setIsModalOpen(true);
-            }}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add AI Question
-          </Button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <ExportPdfButton bank="ai" disabled={isLoading || questions.length === 0} />
+            <Button
+              variant="primary"
+              className="w-full sm:w-auto"
+              onClick={() => {
+                setEditingQuestion(null);
+                setIsModalOpen(true);
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add AI Question
+            </Button>
+          </div>
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
