@@ -43,9 +43,12 @@ export async function loadExportData(scope: ExportScope): Promise<ExportData> {
       throw new Error(categoriesResult.data.error ?? "Could not load the categories.");
     }
 
+    // A question pointing at a category that is not in the list (deleted or created between the two requests)
+    // is exported under Uncategorized rather than silently left out.
+    const knownIds = new Set(categoriesResult.data.categories.map((category) => category._id));
     const byCategory = new Map<string | null, ExportQuestion[]>();
     for (const item of questionsResult.data.questions) {
-      const key = item.category ?? null;
+      const key = item.category && knownIds.has(item.category) ? item.category : null;
       byCategory.set(key, [...(byCategory.get(key) ?? []), toExportQuestion(item)]);
     }
 

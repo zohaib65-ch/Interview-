@@ -59,7 +59,8 @@ export function ExportPdfButton({ bank, categorySlug, disabled, className }: Exp
         onFocus={() => void preloadPdfEngine().catch(() => undefined)}
         title={status === "error" ? message : "Download these questions as a PDF"}
         className={cn(
-          "w-full sm:w-auto",
+          // Fixed minimum width so the label swap (Export PDF / Preparing / Downloaded) doesn't shift the neighbouring button.
+          "w-full sm:w-auto sm:min-w-36",
           status === "done" && "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/10",
           status === "error" && "border-red-500/40 bg-red-500/10 text-red-300 hover:bg-red-500/10",
           className,
